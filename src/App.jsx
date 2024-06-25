@@ -6,9 +6,14 @@ import Navi from "./components/Navi";
 import { pdfjs, Document, Outline, Page as ReactPdfPage } from "react-pdf";
 import { ImSpinner10 } from "react-icons/im";
 
+import pdfWorker from "pdfjs-dist/build/pdf.worker.mjs?url";
+// import { Document, Page as ReactPdfPage } from "react-pdf/dist/esm/index.js";
+// import { pdfjs } from "react-pdf";
+
 import pdfFile from "/book.pdf";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
 
 const height = 900;
 const width = 500;
