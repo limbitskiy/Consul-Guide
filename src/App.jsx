@@ -1,55 +1,126 @@
-import { forwardRef, useState, useRef } from 'react';
-import pageImages from './images';
-import Navi from './components/Navi';
-import Page from './components/Page';
-import HTMLFlipBook from 'react-pageflip';
+import { forwardRef, useState, useMemo, useEffect } from "react";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+// import "react-pdf/dist/esm/Page/TextLayer.css";
+import HTMLFlipBook from "react-pageflip";
+import Navi from "./components/Navi";
+import { pdfjs, Document, Outline, Page as ReactPdfPage } from "react-pdf";
+import { ImSpinner10 } from "react-icons/im";
+
+import pdfFile from "./assets/book.pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+
+const height = 900;
+const width = 500;
+
+// const options = {
+//   cMapUrl: "/cmaps/",
+//   standardFontDataUrl: "/standard_fonts/",
+// };
+
+let flipBook;
+
+const Page = forwardRef(({ pageNumber, onLoadSuccess }, ref) => {
+  // function onLoadSuccess() {
+  //   loadedPages += 1;
+  //   console.log(`page loaded`);
+  // }
+
+  return (
+    <div ref={ref}>
+      <ReactPdfPage pageNumber={pageNumber} width={width} scale={1} renderTextLayer={false} renderAnnotationLayer={true} onLoadSuccess={onLoadSuccess} />
+    </div>
+  );
+});
 
 function App() {
   const [numPages, setNumPages] = useState();
-  const [pageNumber, setPageNumber] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [lazyPages, setLazyPages] = useState([1, 1, 1]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  let page = useRef(null);
-  let flipBook;
+  let loadedPages = 0;
+
+  // useEffect(() => {}, [loadedPages]);
+
+  // useEffect(() => {
+  //   setLazyPages((prev) => [...prev, 1]);
+  // }, [currentPage]);
 
   function onNavigate({ direction }) {
-    if (direction === 'next') {
-      console.log(flipBook);
+    if (direction === "next") {
+      // setCurrentPage((prev) => (prev += 2));
       flipBook.pageFlip().flipNext();
-    } else if (direction === 'prev') {
+    } else if (direction === "prev") {
       flipBook.pageFlip().flipPrev();
     }
   }
 
-  const Page = forwardRef((props, ref) => {
+  function onDocumentLoadSuccess({ numPages: nextNumPages }) {
+    console.log(`document loaded`);
+    setNumPages(nextNumPages);
+  }
+
+  function onSourceSuccess() {
+    console.log(`document source success`);
+  }
+
+  function toContents() {
+    flipBook.pageFlip().flip(3);
+  }
+
+  function onFlipbookInit() {
+    console.log(`flipbook init`);
+  }
+
+  function onItemClick(item) {
+    console.log(item);
+    flipBook.pageFlip().flip(item.pageNumber - 1);
+  }
+
+  function onPageLoadSuccess() {
+    loadedPages += 1;
+    console.log(`page loaded`);
+
+    if (loadedPages === 237) {
+      console.log(`FULLY loaded`);
+      setTimeout(() => {
+        setIsLoaded(true);
+      }, 3000);
+    }
+  }
+
+  function Loader() {
     return (
-      <div className="page">
-        <div className="page-content">
-          <div className="page-image">
-            <img src={props.image} ref={ref} />
-          </div>
-        </div>
+      <div className="wrap" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+        <ImSpinner10 className="spinner" style={{ fontSize: "40px" }} />
       </div>
     );
-  });
+  }
 
   return (
-    <>
-      <Navi onNavigate={onNavigate}>
-        <HTMLFlipBook
-          width={501}
-          height={750}
-          showCover={true}
-          flippingTime={500}
-          maxShadowOpacity={0.5}
-          mobileScrollSupport={true}
-          ref={(r) => (flipBook = r)}
-        >
-          {pageImages.map((image, index) => (
-            <Page number={index + 1} key={image} image={image}></Page>
-          ))}
-        </HTMLFlipBook>
-      </Navi>
-    </>
+    <Navi width={width * 2} toContents={toContents} onNavigate={onNavigate}>
+      {/* <span>Current page: {currentPage}</span>
+      <br />
+      <span>
+        Pages loaded: {lazyPages.length} ({lazyPages})
+      </span> */}
+
+      {!isLoaded && <Loader />}
+
+      <div className={isLoaded ? "flipbook-cnt" : "flipbook-cnt hidden"} style={{ overflow: "hidden" }}>
+        <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} onSourceSuccess={onSourceSuccess} onItemClick={onItemClick}>
+          {/* <Outline /> */}
+          <HTMLFlipBook width={width} height={height} flippingTime={500} showCover={true} useMouseEvents={false} ref={(f) => (flipBook = f)} onInit={onFlipbookInit}>
+            {Array(numPages)
+              .fill(1)
+              .map((_, index) => (
+                <Page key={`page_${index + 1}`} pageNumber={index + 1} onLoadSuccess={onPageLoadSuccess} />
+              ))}
+          </HTMLFlipBook>
+        </Document>
+      </div>
+    </Navi>
   );
 }
 

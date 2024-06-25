@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -14,15 +14,42 @@
 
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 320px;
-  min-height: 100vh;
+  /* display: grid;
+  place-items: center; */
+  height: 100vh;
   background-color: #666;
+  /* overflow: hidden; */
 }
 
-.hiddenCanvasElement {
+.contents-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  border: 1px solid grey;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.contents-btn:hover {
+  background-color: #d5c499;
+}
+
+.flipbook-cnt.hidden {
+  visibility: hidden;
+}
+
+.spinner {
+  animation: 1s spin infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* .hiddenCanvasElement {
   display: none;
 }
 
@@ -40,4 +67,4 @@ body {
 .--right {
   border-left: 0;
   box-shadow: inset 7px 0 30px -7px rgba(104, 104, 104, 0.4);
-}
+} */
