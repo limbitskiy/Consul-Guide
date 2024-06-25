@@ -6,7 +6,7 @@ import Navi from "./components/Navi";
 import { pdfjs, Document, Outline, Page as ReactPdfPage } from "react-pdf";
 import { ImSpinner10 } from "react-icons/im";
 
-import pdfFile from "./assets/book.pdf";
+import pdfFile from "/book.pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
 
@@ -92,14 +92,18 @@ function App() {
 
   function Loader() {
     return (
-      <div className="wrap" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+      <div
+        className="wrap"
+        style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}
+      >
         <ImSpinner10 className="spinner" style={{ fontSize: "40px" }} />
+        <span>Загрузка файла PDF</span>
       </div>
     );
   }
 
   return (
-    <Navi width={width * 2} toContents={toContents} onNavigate={onNavigate}>
+    <Navi width={width * 2} toContents={toContents} onNavigate={onNavigate} controlsVisible={isLoaded}>
       {/* <span>Current page: {currentPage}</span>
       <br />
       <span>
@@ -108,7 +112,7 @@ function App() {
 
       {!isLoaded && <Loader />}
 
-      <div className={isLoaded ? "flipbook-cnt" : "flipbook-cnt hidden"} style={{ overflow: "hidden" }}>
+      <div className={"flipbook-cnt" + (isLoaded ? "" : " hidden")} style={{ overflow: "hidden" }}>
         <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} onSourceSuccess={onSourceSuccess} onItemClick={onItemClick}>
           {/* <Outline /> */}
           <HTMLFlipBook width={width} height={height} flippingTime={500} showCover={true} useMouseEvents={false} ref={(f) => (flipBook = f)} onInit={onFlipbookInit}>

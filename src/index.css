@@ -31,16 +31,34 @@ body {
   cursor: pointer;
 }
 
+.contents-btn {
+  transition: background-color 0.5s;
+}
+
 .contents-btn:hover {
   background-color: #d5c499;
 }
 
+.flipbook-cnt {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
 .flipbook-cnt.hidden {
-  visibility: hidden;
+  opacity: 0;
 }
 
 .spinner {
   animation: 1s spin infinite linear;
+}
+
+.navi-icon {
+  color: #c6c6c6;
+  transition: color 0.2s;
+}
+
+.navi-icon:hover {
+  color: #fff;
 }
 
 @keyframes spin {
