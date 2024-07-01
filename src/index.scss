@@ -1,0 +1,238 @@
+:root {
+  font-family: Roboto, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #666;
+}
+
+// .flipbook-cnt {
+//   opacity: 1;
+//   transition: opacity 1s;
+// }
+
+// .flipbook-cnt.hidden {
+//   opacity: 0;
+// }
+
+// .spinner {
+//   animation: 1s spin infinite linear;
+// }
+
+// @keyframes spin {
+//   to {
+//     transform: rotate(360deg);
+//   }
+// }
+
+.mobile-cnt {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+}
+
+.demo-book {
+  max-height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+// page
+.page-shadow {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 5;
+  width: 15%;
+  pointer-events: none;
+  background-repeat: repeat-y;
+  background-size: 100%;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAAABCAYAAADQO/BKAAAASElEQVQYlZ2NSQrAMAwDR0n//2X3kBpMkEOoQGjBiyJCLJxUTf7bOV+VJifC+KrR5Fu6PYxHkoDxMf0s3TQcwNPoPrffyh96AcOpHU0esqcJAAAAAElFTkSuQmCC");
+
+  &.shadow-left {
+    right: 0;
+  }
+
+  &.shadow-right {
+    left: 0;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJEAAAABCAYAAADevkxgAAAAj0lEQVQokZVPQQqEMBBL2o61UgqC4KVHv+P/f9PsYVF2ZdlqIAyTBCZDADsA4Q198Lr32Dpa+6UNw3DcaSS/siRbjBEkRfL0nXMNgHLOIinn3DnNrJVS4L1XCEEhBJmZzEzLsmAcR03TpJyzSima51nruiqlxFqrAGDbtuP/A0QfdzJPce1xx3ui39X+dnkBlW9HAKd4Q+sAAAAASUVORK5CYII=");
+  }
+}
+
+.page {
+  overflow: hidden;
+
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    -webkit-user-drag: none;
+    pointer-events: none;
+  }
+
+  .page-content {
+    height: 100%;
+
+    .page-image {
+      height: 100%;
+      // width: 100%;
+      background-size: contain;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+  }
+
+  &.--left {
+    border-right: 0;
+    box-shadow: inset -7px 0 30px -7px rgba(0, 0, 0, 0.4);
+  }
+
+  &.--right {
+    border-left: 0;
+    box-shadow: inset 7px 0 30px -7px rgba(0, 0, 0, 0.4);
+  }
+
+  // &.hard {
+  //   background-color: hsl(35, 50, 90);
+  //   border: solid 1px hsl(35, 20, 50);
+  // }
+
+  // &.page-cover {
+  //   background-color: hsl(35, 45, 80);
+  //   color: hsl(35, 35, 35);
+  //   border: solid 1px hsl(35, 20, 50);
+
+  //   h2 {
+  //     text-align: center;
+  //     padding-top: 50%;
+  //     font-size: 210%;
+  //   }
+
+  //   &.page-cover-top {
+  //     box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(0, 0, 0, 0.4);
+  //   }
+
+  //   &.page-cover-bottom {
+  //     box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), 10px 0 8px 0px rgba(0, 0, 0, 0.4);
+  //   }
+  // }
+}
+
+// toast
+.p-toast-message-content {
+  border: 1px solid #d5c4994a;
+  border-radius: 6px;
+}
+
+.p-toast-detail {
+  margin: 0.2rem 0 0 0;
+}
+
+.loader {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  background-color: #666666;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+
+  &.hidden {
+    opacity: 0;
+  }
+
+  .progress-cnt {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+  }
+}
+
+// navigation
+.navi-icon {
+  color: #c6c6c6;
+  transition: color 0.2s;
+}
+
+.navi-icon:hover {
+  color: #fff;
+}
+
+.navi-toolbar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 999;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.contents-btn {
+  cursor: pointer;
+  transition: color 0.2s;
+  // height: 28px;
+
+  &:hover {
+    color: #d5c499;
+  }
+}
+
+//  loader
+.message-cnt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  position: absolute;
+  top: 40%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #cecece;
+
+  .value {
+    background-color: #caad64;
+    height: 4px;
+  }
+}
+
+// contents
+.page-contents {
+  position: absolute;
+  inset: 0;
+
+  .contents-list {
+    margin: 0;
+    height: 100%;
+    padding: 19% 11% 0 28%;
+
+    &.first {
+      padding: 31% 11% 0 28%;
+    }
+  }
+
+  .contents-item {
+    cursor: pointer;
+    list-style: none;
+
+    &:hover {
+      background-color: rgba(200, 150, 30, 0.2);
+    }
+  }
+}
