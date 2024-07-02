@@ -48,6 +48,10 @@ body {
   max-height: 100dvh;
   margin: 0 auto;
   overflow: hidden;
+
+  &.mobile {
+    touch-action: auto !important;
+  }
 }
 
 // page
@@ -129,6 +133,11 @@ body {
   // }
 }
 
+.touch-screen {
+  position: absolute;
+  inset: 0;
+}
+
 // toast
 .p-toast-message-content {
   border: 1px solid #d5c4994a;
@@ -139,7 +148,7 @@ body {
   margin: 0.2rem 0 0 0;
 }
 
-.loader {
+.app-loader {
   position: absolute;
   inset: 0;
   z-index: 9999;
@@ -189,6 +198,14 @@ body {
   &:hover {
     color: #d5c499;
   }
+
+  &.mobile {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    color: #d5c499;
+  }
 }
 
 //  loader
@@ -234,5 +251,27 @@ body {
     &:hover {
       background-color: rgba(200, 150, 30, 0.2);
     }
+  }
+}
+
+// loader
+.loader-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: #222;
+  display: grid;
+  place-items: center;
+
+  .loader {
+    animation: spin 1s infinite linear;
+    transition: transform 1s;
+    color: white;
+    background-color: transparent;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

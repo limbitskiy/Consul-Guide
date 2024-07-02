@@ -1,11 +1,13 @@
-import { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useRef, useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
 import Navi from "./Navi";
 import ProgressBar from "./ProgressBar";
 import logo from "../assets/logo.gif";
+import { LuLoader2 } from "react-icons/lu";
+import { CiViewList } from "react-icons/ci";
 
 const Contents = ({ page, flipTo }) => {
-  if (page === 5) {
+  if (page === 4) {
     return (
       <div className="page-contents">
         <ul className="contents-list first">
@@ -26,7 +28,7 @@ const Contents = ({ page, flipTo }) => {
     );
   }
 
-  if (page === 6) {
+  if (page === 5) {
     return (
       <div className="page-contents">
         <ul className="contents-list">
@@ -49,7 +51,7 @@ const Contents = ({ page, flipTo }) => {
     );
   }
 
-  if (page === 7) {
+  if (page === 6) {
     return (
       <div className="page-contents">
         <ul className="contents-list">
@@ -73,45 +75,86 @@ const Contents = ({ page, flipTo }) => {
 };
 
 const ImgComponent = ({ src }) => {
-  // const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // useEffect(() => {
-  //   const img = new Image();
-  //   img.onload = () => setIsLoaded(true);
-  //   img.src = src;
-  // }, [src]);
+  useEffect(() => {
+    const img = new Image();
+    // console.log(`${src} loading....`);
+    img.onload = () => {
+      setIsLoaded(true);
+      // console.log(`${src} loaded!!`);
+    };
+    img.src = src;
+  }, [src]);
 
-  return (
-    <div className="page-image" style={{ backgroundImage: `url(${src})` }}>
-      {/* {!isLoaded && <p>Loading...</p>} */}
-    </div>
-  );
+  if (!isLoaded) {
+    return (
+      <div className="loader-backdrop">
+        <LuLoader2 className="loader" size={28} />
+      </div>
+    );
+  }
+
+  return <div className="page-image" style={{ backgroundImage: `url(${src})` }}></div>;
 };
 
 const Page = forwardRef((props, ref) => {
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const touchScreenRef = useRef(null);
+
+  const minSwipeDistance = 80;
+
+  const isZoomed = () => {
+    return window.innerWidth !== window.visualViewport.width;
+  };
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+
+  const onTouchEnd = (e) => {
+    if (!touchStart || !touchEnd || e.touches.length > 1) {
+      touchScreenRef.current.style.pointerEvents = "none";
+      setTimeout(() => {
+        touchScreenRef.current.style.pointerEvents = "auto";
+      }, 500);
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if ((isLeftSwipe || isRightSwipe) && !isZoomed()) {
+      props.handleNavigate({ direction: isLeftSwipe ? "next" : "prev" });
+      // console.log("swipe", isLeftSwipe ? "left" : "right");
+    }
+  };
+
   return (
-    <div className="page" data-density="soft" ref={ref}>
-      <div className="page-content">
-        {props.contents && props.number === 5 && <Contents page={props.number} flipTo={props.flipTo} />}
-        {props.contents && props.number === 6 && <Contents page={props.number} flipTo={props.flipTo} />}
-        {props.contents && props.number === 7 && <Contents page={props.number} flipTo={props.flipTo} />}
-        {props.shadow && props.number % 2 === 0 ? <div className="page-shadow shadow-right"></div> : null}
-        {props.shadow && props.number % 2 !== 0 ? <div className="page-shadow shadow-left"></div> : null}
-        <ImgComponent src={props.src} setLoaded={props.setLoaded} />
-        {/* <h2 className="page-header">Page header - {props.number}</h2> */}
-        {/* <div className="page-image" style={{ backgroundImage: `url(${props.src})` }}> */}
-        {/* <img src={props.src} /> */}
-        {/* </div> */}
-        {/* <div className="page-text">{props.children}</div> */}
-        {/* <div className="page-footer">{props.number + 1}</div> */}
+    <>
+      <div className="page" data-density="soft" idx={props.idx} ref={ref}>
+        <div className="page-content">
+          {props.number === 4 && <Contents page={props.number} flipTo={props.flipTo} />}
+          {props.number === 5 && <Contents page={props.number} flipTo={props.flipTo} />}
+          {props.number === 6 && <Contents page={props.number} flipTo={props.flipTo} />}
+          {props.shadow && props.number % 2 === 0 ? <div className="page-shadow shadow-left"></div> : null}
+          {props.shadow && props.number % 2 !== 0 ? <div className="page-shadow shadow-right"></div> : null}
+          {props.customTouchActions && <div className="touch-screen" ref={touchScreenRef} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}></div>}
+          {Math.abs(props.idx - props.pageIdx) < 5 && <ImgComponent src={props.src} />}
+        </div>
       </div>
-    </div>
+    </>
   );
 });
 
 function Loader({ isShown, loadedPages, loaderMessage }) {
   return (
-    <div className={"loader" + (isShown ? "" : " hidden")}>
+    <div className={"app-loader" + (isShown ? "" : " hidden")}>
       <div className="progress-cnt">
         <ProgressBar progress={(loadedPages * 100) / 237} />
         <div className="message-cnt">
@@ -125,7 +168,7 @@ function Loader({ isShown, loadedPages, loaderMessage }) {
 
 function Flipbook({ pages }) {
   const [isMobile, setIsMobile] = useState(false);
-  const [page, setPage] = useState(1);
+  const [pageIdx, setPageIdx] = useState(0);
   const [bookmark, setBookmark] = useState(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -143,25 +186,50 @@ function Flipbook({ pages }) {
     };
   }, []);
 
+  // preload future pages
+  useEffect(() => {
+    if (pages[pageIdx + 1]) {
+      const img = new Image();
+      img.src = pages[pageIdx + 1];
+    }
+
+    if (pages[pageIdx + 2]) {
+      const img = new Image();
+      img.src = pages[pageIdx + 2];
+    }
+
+    if (pages[pageIdx - 1]) {
+      const img = new Image();
+      img.src = pages[pageIdx - 1];
+    }
+
+    if (pages[pageIdx - 2]) {
+      const img = new Image();
+      img.src = pages[pageIdx - 2];
+    }
+  }, [pageIdx]);
+
   useEffect(() => {
     Promise.all(
-      pages.map((src) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = src;
-          img.onload = () => {
-            resolve();
-            setLoadingProgress((prev) => prev + 1);
-          };
-        });
-      })
+      Array(4)
+        .fill(1)
+        .map((_, idx) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.src = pages[idx];
+            img.onload = () => {
+              resolve();
+              setLoadingProgress((prev) => prev + 30);
+            };
+          });
+        })
     ).then(() => {
       setTimeout(() => {
         setImagesLoaded(true);
         // console.log(`loaded`);
       }, 3000);
     });
-  }, [pages]);
+  }, []);
 
   let flipBook;
 
@@ -174,18 +242,24 @@ function Flipbook({ pages }) {
   }
 
   function flipTo(pageNumber) {
+    // console.log(`going to ${pageNumber - 1}`);
     flipBook.pageFlip().flip(+pageNumber - 1);
   }
 
   function onFlip(e) {
     // console.log(e.data);
-    setPage(e.data);
+    // setPage(e.data);
+    setPageIdx(e.data);
   }
 
   if (isMobile) {
     return (
       <div className="mobile-cnt">
+        {/* <span>{pageIdx}</span> */}
         <Loader isShown={!imagesLoaded} loadedPages={loadingProgress} loaderMessage={"Идет загрузка..."} />
+        <span className="contents-btn mobile" onClick={() => flipTo(5)}>
+          <CiViewList size={28} />
+        </span>
         <HTMLFlipBook
           width={480}
           height={720}
@@ -194,15 +268,16 @@ function Flipbook({ pages }) {
           maxWidth={1000}
           maxHeight={1000}
           minHeight={450}
+          onFlip={onFlip}
           maxShadowOpacity={0.5}
           flippingTime={500}
-          mobileScrollSupport={true}
+          useMouseEvents={false}
           className="demo-book mobile"
+          ref={(el) => (flipBook = el)}
         >
-          {pages.map((page, idx) => (
-            <Page key={page} number={idx + 1} src={page} />
-          ))}
-          <Page number={238} />
+          {pages.map((_, idx) => {
+            return <Page key={idx} idx={idx} pageIdx={pageIdx} number={idx} src={pages[idx]} customTouchActions={true} handleNavigate={handleNavigate} flipTo={flipTo} />;
+          })}
         </HTMLFlipBook>
       </div>
     );
@@ -211,7 +286,7 @@ function Flipbook({ pages }) {
   return (
     <>
       <Loader isShown={!imagesLoaded} loadedPages={loadingProgress} loaderMessage={"Идет загрузка..."} />
-      <Navi flipTo={flipTo} handleNavigate={handleNavigate} bookmark={bookmark} setBookmark={() => setBookmark(page)}>
+      <Navi flipTo={flipTo} handleNavigate={handleNavigate} bookmark={bookmark} setBookmark={() => setBookmark(pageIdx)}>
         <HTMLFlipBook
           width={480}
           height={720}
@@ -228,9 +303,9 @@ function Flipbook({ pages }) {
           onFlip={onFlip}
           ref={(el) => (flipBook = el)}
         >
-          {pages.map((page, idx) => (
-            <Page key={page} number={idx + 1} src={page} shadow={true} flipTo={flipTo} contents={true} />
-          ))}
+          {pages.map((_, idx) => {
+            return <Page key={idx} idx={idx} pageIdx={pageIdx} number={idx} src={pages[idx]} shadow={true} flipTo={flipTo} />;
+          })}
           <Page number={238} />
         </HTMLFlipBook>
       </Navi>
