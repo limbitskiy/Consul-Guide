@@ -79,10 +79,8 @@ const ImgComponent = ({ src }) => {
 
   useEffect(() => {
     const img = new Image();
-    // console.log(`${src} loading....`);
     img.onload = () => {
       setIsLoaded(true);
-      // console.log(`${src} loaded!!`);
     };
     img.src = src;
   }, [src]);
@@ -99,7 +97,7 @@ const ImgComponent = ({ src }) => {
 };
 
 const Page = forwardRef((props, ref) => {
-  const [touchStart, setTouchStart] = useState(null);
+  const [touchStart, setTouchStart] = useState({});
   const [touchEnd, setTouchEnd] = useState(null);
 
   const touchScreenRef = useRef(null);
@@ -107,31 +105,37 @@ const Page = forwardRef((props, ref) => {
   const minSwipeDistance = 80;
 
   const isZoomed = () => {
-    return window.innerWidth !== window.visualViewport.width;
+    return window.visualViewport.scale > 1.05;
   };
 
   const onTouchStart = (e) => {
+    if (e.targetTouches.length > 1 || isZoomed()) {
+      setTouchStart({});
+      return;
+    }
+
     setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart({ x: e.targetTouches[0].clientX, y: e.targetTouches[0].clientY });
   };
 
   const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
 
   const onTouchEnd = (e) => {
-    if (!touchStart || !touchEnd || e.touches.length > 1) {
-      touchScreenRef.current.style.pointerEvents = "none";
-      setTimeout(() => {
+    if (!touchStart.x || !touchEnd || e.touches.length > 1) {
+      if (touchStart.x && touchStart.y) {
+        touchScreenRef.current.style.pointerEvents = "none";
+        document.elementFromPoint(touchStart.x, touchStart.y).click();
         touchScreenRef.current.style.pointerEvents = "auto";
-      }, 500);
+      }
       return;
     }
 
-    const distance = touchStart - touchEnd;
+    const distance = touchStart.x - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
+
     if ((isLeftSwipe || isRightSwipe) && !isZoomed()) {
       props.handleNavigate({ direction: isLeftSwipe ? "next" : "prev" });
-      // console.log("swipe", isLeftSwipe ? "left" : "right");
     }
   };
 
@@ -242,20 +246,16 @@ function Flipbook({ pages }) {
   }
 
   function flipTo(pageNumber) {
-    // console.log(`going to ${pageNumber - 1}`);
     flipBook.pageFlip().flip(+pageNumber - 1);
   }
 
   function onFlip(e) {
-    // console.log(e.data);
-    // setPage(e.data);
     setPageIdx(e.data);
   }
 
   if (isMobile) {
     return (
       <div className="mobile-cnt">
-        {/* <span>{pageIdx}</span> */}
         <Loader isShown={!imagesLoaded} loadedPages={loadingProgress} loaderMessage={"Идет загрузка..."} />
         <span className="contents-btn mobile" onClick={() => flipTo(5)}>
           <CiViewList size={28} />

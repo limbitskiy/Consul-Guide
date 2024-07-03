@@ -12,36 +12,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  background-color: #666;
+html {
+  overscroll-behavior: none;
 }
 
-// .flipbook-cnt {
-//   opacity: 1;
-//   transition: opacity 1s;
-// }
-
-// .flipbook-cnt.hidden {
-//   opacity: 0;
-// }
-
-// .spinner {
-//   animation: 1s spin infinite linear;
-// }
-
-// @keyframes spin {
-//   to {
-//     transform: rotate(360deg);
-//   }
-// }
+body {
+  margin: 0;
+  background-color: #232020;
+  overflow: hidden;
+}
 
 .mobile-cnt {
   overflow: hidden;
   display: flex;
-  align-items: center;
+  // align-items: center;
   justify-content: center;
-  height: 100dvh;
+  // height: 100dvh;
 }
 
 .demo-book {
@@ -50,7 +36,7 @@ body {
   overflow: hidden;
 
   &.mobile {
-    touch-action: auto !important;
+    touch-action: manipulation !important;
   }
 }
 
@@ -106,36 +92,12 @@ body {
     border-left: 0;
     box-shadow: inset 7px 0 30px -7px rgba(0, 0, 0, 0.4);
   }
-
-  // &.hard {
-  //   background-color: hsl(35, 50, 90);
-  //   border: solid 1px hsl(35, 20, 50);
-  // }
-
-  // &.page-cover {
-  //   background-color: hsl(35, 45, 80);
-  //   color: hsl(35, 35, 35);
-  //   border: solid 1px hsl(35, 20, 50);
-
-  //   h2 {
-  //     text-align: center;
-  //     padding-top: 50%;
-  //     font-size: 210%;
-  //   }
-
-  //   &.page-cover-top {
-  //     box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), -2px 0 5px 2px rgba(0, 0, 0, 0.4);
-  //   }
-
-  //   &.page-cover-bottom {
-  //     box-shadow: inset 0px 0 30px 0px rgba(36, 10, 3, 0.5), 10px 0 8px 0px rgba(0, 0, 0, 0.4);
-  //   }
-  // }
 }
 
 .touch-screen {
   position: absolute;
   inset: 0;
+  pointer-events: auto;
 }
 
 // toast
@@ -152,7 +114,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 9999;
-  background-color: #666666;
+  background-color: #232020;
   transition: opacity 0.2s ease-out;
   pointer-events: none;
 
@@ -201,10 +163,18 @@ body {
 
   &.mobile {
     position: absolute;
-    top: 1rem;
+    bottom: 1rem;
     right: 1rem;
-    z-index: 10;
-    color: #d5c499;
+    z-index: 100;
+    color: #fff;
+    background-color: #222;
+    border: 1px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.1);
   }
 }
 
