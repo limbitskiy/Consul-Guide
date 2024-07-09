@@ -1,5 +1,9 @@
-# PDF flipbook for Counsul Group
+# PDF flipbook for Consul Group
 
-Using [react-pageflip](https://www.npmjs.com/package/react-pageflip) library.
+Stack:
 
-See it on prod - [guide.consul.group](https://guide.consul.group/)
+- react
+- TS
+- [react-pageflip](https://www.npmjs.com/package/react-pageflip)
+
+> See it on prod - [guide.consul.group](https://guide.consul.group/)
